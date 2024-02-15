@@ -15,7 +15,7 @@
       appId: "5d5a5a64-d951-49a2-9817-b64ec4d9f105",
     });
   });
-});
+
 OneSignal.getExternalUserId().then(function(externalUserId){
           if (externalUserId == null){
             var anonUserId = Math.floor(1000000000 + Math.random() * 9000000000);
