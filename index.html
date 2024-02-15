@@ -8,6 +8,9 @@
 	<head>
       <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
+	OneSignalDeferred.push(function() {
+  OneSignal.login("EID");
+});
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   OneSignalDeferred.push(function(OneSignal) {
     OneSignal.init({
