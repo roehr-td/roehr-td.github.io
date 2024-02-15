@@ -16,6 +16,15 @@
     });
   });
 });
+OneSignal.getExternalUserId().then(function(externalUserId){
+          if (externalUserId == null){
+            var anonUserId = Math.floor(1000000000 + Math.random() * 9000000000);
+            console.log("externalUserId: ", anonUserId);
+            OneSignal.setExternalUserId(anonUserId);
+          } else {
+            console.log("externalUserId: ", externalUserId);
+          }
+        });
 </script>
 		<title>Money.com</title>
 		<meta charset="utf-8" />
