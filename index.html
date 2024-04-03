@@ -42,7 +42,11 @@
         script.onload = () => {
           webchat = TalkdeskChatSDK(node, props);
           webchat.init(configs).then(() => {
-            window.virtualAgentBootstrapLoader(webchat);
+            window.virtualAgentBootstrapLoader(webchat, {
+              withWelcomeScreen: false,
+              welcomeMessage: "Start",
+              openAfterTimeout: 5000
+            });
           });
         };
           /*
@@ -61,7 +65,7 @@
            webchat.onOpenWebchat = function() {
              setContext()
            }*/
-        };
+
       })(
         window,
         document,
