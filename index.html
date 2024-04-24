@@ -22,61 +22,87 @@
     <!-- Start of Talkdesk Code -->
     <script>
       var webchat;
-      (function(window, document, node, props, configs) {
-        if (window.TalkdeskChatSDK) {
-          console.error("TalkdeskChatSDK already included");
-          return;
-        }
-        var divContainer = document.createElement("div");
-        divContainer.id = node;
-        document.body.appendChild(divContainer);
-        var src = "https://talkdeskchatsdk.talkdeskapp.com/talkdeskchatsdk.js";
-        var script = document.createElement("script");
-        var firstScriptTag = document.getElementsByTagName("script")[0];
-        script.type = "text/javascript";
-        script.charset = "UTF-8";
-        script.id = "tdwebchatscript";
-        script.src = src;
-        script.async = true;
-        firstScriptTag.parentNode.insertBefore(script, firstScriptTag);
-        script.onload = () => {
+(function (window, document, node, props, configs) {
+    if (window.TalkdeskChatSDK) {
+      console.error("TalkdeskChatSDK already included");
+      return;
+    }
+    var divContainer = document.createElement("div");
+    divContainer.id = node;
+    document.body.appendChild(divContainer);
+    var src = "https://talkdeskchatsdk.talkdeskapp.com/talkdeskchatsdk.js";
+    var script = document.createElement("script");
+    var firstScriptTag = document.getElementsByTagName("script")[0];
+    script.type = "text/javascript";
+    script.charset = "UTF-8";
+    script.id = "tdwebchatscript";
+    script.src = src;
+    script.async = true;
+            firstScriptTag.parentNode.insertBefore(script, firstScriptTag);
+           script.onload = function() {
           webchat = TalkdeskChatSDK(node, props);
-          webchat.init(configs).then(() => {
-            window.virtualAgentBootstrapLoader(webchat, {
-              withWelcomeScreen: false,
-              welcomeMessage: "Help me get started!",
-              openAfterTimeout: 3000
-            });
+          webchat.init(configs).then(function () {
+            webchat.selfHostedApp.open();
+            setTimeout(function () {
+            }, 400);
           });
         };
-          /*
-           * Send custom data from your website to TalkDesk!
-           * If you would like to do it, you need to remove the following commented code and
-           * modify the webchat.setContextParam parameters to pass in the data you need.
-           */
-           /*function setContext() {
-             webchat.setContextParam({ "var1": "value1", "var2": "value2", "var3": 100 })
-           }
-           // Send data when the chat conversation is initiated
-           webchat.onConversationStart = function() {
-             setContext()
-           }
-           // Send data when the chat widget is open
-           webchat.onOpenWebchat = function() {
-             setContext()
-           }*/
-
       })(
         window,
         document,
         "tdWebchat",
-        { touchpointId: "82273b088f4e4166a6ea63c186a514ad", accountId: "", region: "td-us-1" },
-        { enableValidation: false, enableEmoji: true, enableUserInput: true, enableAttachments: true, styles: {
+        { touchpointId: "ba2a454893924985b8c81b853bf013eb", accountId: "", region: "td-us-1" },
+        {
+          enableValidation: false,
+          enableEmoji: true,
+          enableUserInput: true,
+          enableAttachments: true,
+          enableConnectionFromTriggerButton: true,
+          welcomeMessages: [
+            {
+              "media_type": "customtext",
+              "text_response": "Hello! 👋 I'm your automated assistant."
+            },
+            {
+              "media_type": "quickreplies",
+              "text_response": "How can I help you today?",
+              "quick_actions": {
+                "elements":
+                [
+                  {
+                    "display_text": "Software Support",
+                    "type": "payload",
+                    "target": "_blank",
+                    "payload": "software support",
+                  },
+                  {
+                    "display_text": "Outage",
+                    "target": "_blank",
+                    "payload": "outage",
+                    "type": "payload"
+                  },
+                  {
+                    "display_text": "Printers and Forms",
+                    "target": "_blank",
+                    "payload": "printers",
+                    "type": "payload"
+                  },
+                  {
+                    "display_text": "Billing",
+                    "target": "_blank",
+                    "payload": "billing",
+                    "type": "payload"
+                  }
+                ]
+              }
+            }
+        ],
+         styles: {
             /* General */
             'chatThemeMainFont': 'Roboto-Regular',
             /* Widget launcher */
-            'chatThemeColor': '#004733',
-            'chatHoverThemeColor': '#F0F7F1',
+            'chatThemeColor': '#000000',
+            'chatHoverThemeColor': '#bcbcbc',
             'chatIcon':
             'https://prd-cdn-talkdesk.talkdesk.com/cdn-assets/latest/talkdesk/product/app-icons/sms.svg',
             'triggerButtonHeight': '35px',
@@ -88,7 +114,7 @@
             'https://prd-cdn-talkdesk.talkdesk.com/cdn-assets/latest/talkdesk/product/app-icons/sms.svg',
             'chatTitleIconHeight': null,
             'chatTitleIconWidth': null,
-            'chatTitle': 'Mortgage Assistant',
+            'chatTitle': 'Support Autopilot',
             'chatTitleTextColor': null,
             'chatSubtitle': 'Powered by Talkdesk',
             'chatSubtitleTextColor': null,
@@ -148,7 +174,7 @@
             'userAnchorTextColor': '#E1CCFE',
             'userAnchorTextColorVisited': '#B681FC',
             'botTextColor': '#000000',
-            'botBackgroundColor': '#F2F4F5',
+            'botBackgroundColor': '#CCCCCC',
             'botAnchorTextColor': '#3232D6',
             'botAnchorTextColorVisited': '#5405BD',
             'botIconVerticalAlign': 'top',
@@ -157,7 +183,7 @@
             'avatarBorderColor': '#EDF4FC',
             'botIconHeight': '32px',
             'botIconWidth': '32px',
-            //'botIcon': null,
+            'botIcon': 'https://asset.brandfetch.io/id_VanTZ8H/id6fJ2ZULa.jpeg',
             'userInputSeparatorColor': '#DFDFDF',
             'userInputHeight': '56px',
             'chatPlaceholder': 'Type a message...',
@@ -198,7 +224,7 @@
             //'replyTextColor': '#005CDE',
             //'replyBackgroundColor': 'transparent',
             //'replyBorderColor': '#005CDE',
-            //'replyHoverTextColor': '#EDF4FC'   
+            //'replyHoverTextColor': '#EDF4FC'
         }
         }
       );
