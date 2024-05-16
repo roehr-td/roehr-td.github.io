@@ -37,14 +37,15 @@
     script.id = "tdwebchatscript";
     script.src = src;
     script.async = true;
-            firstScriptTag.parentNode.insertBefore(script, firstScriptTag);
-           script.onload = function() {
-          webchat = TalkdeskChatSDK(node, props);
-          webchat.init(configs).then(function () {
-            webchat.selfHostedApp.open();
-            setTimeout(function () {
-            }, 2000);
-          });
+    firstScriptTag.parentNode.insertBefore(script, firstScriptTag);
+    script.onload = function() {
+    webchat = TalkdeskChatSDK(node, props);
+    function setContext() {
+      webchat.setContextParam({
+        // Here, the unique identifier of the contact person is passed to talkdesk. Currently, only phone numbers and email addresses are supported. Please choose one to pass.
+        "td_contact_person_identification": "+15175758699"
+             })
+           }
         };
       })(
         window,
