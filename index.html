@@ -44,6 +44,14 @@
       function setContext() {
         webchat.setContextParam({"td_contact_person_identification": "phalberson@gmail.com"})
       }
+      // Send data when the chat conversation is initiated
+           webchat.onConversationStart = function() {
+             setContext()
+           }
+           // Send data when the chat widget is open
+           webchat.onOpenWebchat = function() {
+             setContext()
+           }
     };
       })(
         window,
