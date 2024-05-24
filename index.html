@@ -67,37 +67,50 @@
           welcomeMessages: [
             {
               "media_type": "customtext",
-              "text_response": "Hello! 👋 I'm your automated assistant."
+              "text_response": "Hello! 👋 I'm your digital shopping assistant."
             },
             {
-              "media_type": "quickreplies",
+              "media_type": "buttons",
               "text_response": "How can I help you today?",
               "quick_actions": {
                 "elements":
                 [
-                  {
-                    "display_text": "Software Support",
+                {
+                    "display_text": "🚛 Shipping updates",
                     "type": "payload",
                     "target": "_blank",
-                    "payload": "software support",
+                    "payload": "order information",
+                  }, 
+                {
+                    "display_text": "📦 Help with an existing order",
+                    "type": "payload",
+                    "target": "_blank",
+                    "payload": "order information",
                   },
                   {
-                    "display_text": "Outage",
+                    "display_text": "🔎 Product questions",
                     "target": "_blank",
-                    "payload": "outage",
-                    "type": "payload"
+                    "type": "payload",
+                    "payload": "product questions"
                   },
                   {
-                    "display_text": "Printers and Forms",
+                    "display_text": "ℹ️ Account help",
                     "target": "_blank",
-                    "payload": "printers",
-                    "type": "payload"
+                    "type": "payload",
+                    "payload": "account help",
+
                   },
                   {
-                    "display_text": "Billing",
+                    "display_text": "💬 Chat with an expert",
                     "target": "_blank",
-                    "payload": "billing",
-                    "type": "payload"
+                    "type": "payload",
+                    "payload": "escalate to agent"
+                  },
+                  {
+                    "display_text": "📍Find a nearby location",
+                    "target": "_blank",
+                    "type": "payload",
+                    "payload": "locations"
                   }
                 ]
               }
