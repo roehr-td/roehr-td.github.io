@@ -1,86 +1,610 @@
 <!DOCTYPE html>
 <html lang="en">
-
-
 <head>
-    <meta charset="UTF-8" />
-     <meta name="referrer" content="unsafe-url">
-    <style type="text/css">
-      body,
-      html {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-        overflow: hidden;
-      }
-
-      #content {
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        top: 0px;
-      }
-    </style>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grand Venetian Resort & Casino</title>
     <style>
-      body {
-        <iframe src="https://www.venetianlasvegas.com/resort.html" title="description"></iframe>
-      }
-    </style>
-  </head>
-  
-  <body>
-   <!-- Start of Talkdesk Code -->
-<!-- Start of Talkdesk Code -->
-    <script>
-      var webchat;
-      (function(window, document, node, props, configs) {
-        if (window.TalkdeskChatSDK) {
-          console.error("TalkdeskChatSDK already included");
-          return;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
         }
-        var divContainer = document.createElement("div");
-        divContainer.id = node;
-        document.body.appendChild(divContainer);
-        var src = "https://talkdeskchatsdk.talkdeskapp.com/v2/talkdeskchatsdk.js";
-        var script = document.createElement("script");
-        var firstScriptTag = document.getElementsByTagName("script")[0];
-        script.type = "text/javascript";
-        script.charset = "UTF-8";
-        script.id = "tdwebchatscript";
-        script.src = src;
-        script.async = true;
-        firstScriptTag.parentNode.insertBefore(script, firstScriptTag);
-        script.onload = function() {
-          webchat = TalkdeskChatSDK(node, props);
-          webchat.init(configs);
-          /*
-           * Send custom data from your website to TalkDesk!
-           * If you would like to do it, you need to remove the following commented code and
-           * modify the webchat.setContextParam parameters to pass in the data you need.
-           */
-           /*function setContext() {
-             webchat.setContextParam({ "var1": "value1", "var2": "value2", "var3": 100 })
-           }
-           // Send data when the chat conversation is initiated
-           webchat.onConversationStart = function() {
-             setContext()
-           }
-           // Send data when the chat widget is open
-           webchat.onOpenWebchat = function() {
-             setContext()
-           }*/
-        };
-      })(
-        window,
-        document,
-        "tdWebchat",
-        { touchpointId: "88d37d1af7d64ad7909c177c7120119d", accountId: "", region: "td-us-1" },
-        { enableValidation: false, enableEmoji: true, enableUserInput: true, enableAttachments: true }
-      );
-    </script>
+        
+        body {
+            color: #333;
+            line-height: 1.6;
+            background-color: #f8f8f8;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: rgba(0, 0, 0, 0.8);
+            position: fixed;
+            width: 100%;
+            z-index: 100;
+        }
+        
+        .top-bar {
+            background-color: #000;
+            padding: 8px 0;
+            font-size: 0.8rem;
+        }
+        
+        .top-bar-content {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            color: #fff;
+        }
+        
+        .top-bar-content a {
+            color: #fff;
+            text-decoration: none;
+            margin-left: 20px;
+            font-size: 0.8rem;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: #c9a76c;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 30px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #fff;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #c9a76c;
+        }
+        
+        .booking-button {
+            background-color: #c9a76c;
+            color: #000;
+            padding: 8px 15px;
+            border-radius: 3px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background-color 0.3s;
+        }
+        
+        .booking-button:hover {
+            background-color: #b8965b;
+        }
+        
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            color: #fff;
+            font-size: 24px;
+        }
+        
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url("/api/placeholder/1600/900");
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            color: white;
+        }
+        
+        .hero-content {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 300;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+            font-weight: 300;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background-color: #c9a76c;
+            color: #000;
+            padding: 15px 30px;
+            border-radius: 3px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background-color 0.3s;
+        }
+        
+        .cta-button:hover {
+            background-color: #b8965b;
+        }
+        
+        /* Features Section */
+        .offers {
+            padding: 80px 0;
+            background-color: #fff;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.2rem;
+            margin-bottom: 50px;
+            color: #333;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 300;
+        }
+        
+        .offers-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+        
+        .offer-item {
+            position: relative;
+            overflow: hidden;
+            height: 300px;
+            cursor: pointer;
+        }
+        
+        .offer-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+        
+        .offer-item:hover img {
+            transform: scale(1.05);
+        }
+        
+        .offer-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            padding: 20px;
+            color: #fff;
+        }
+        
+        .offer-title {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .offer-link {
+            color: #c9a76c;
+            text-decoration: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+        
+        /* Accommodations Section */
+        .accommodations {
+            padding: 80px 0;
+            background-color: #f8f8f8;
+        }
+        
+        .accommodations-content {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+        }
+        
+        .accommodations-image {
+            flex: 1;
+            height: 450px;
+            overflow: hidden;
+        }
+        
+        .accommodations-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .accommodations-text {
+            flex: 1;
+        }
+        
+        .accommodations-text h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 300;
+            color: #333;
+        }
+        
+        .accommodations-text p {
+            margin-bottom: 20px;
+            color: #666;
+            font-size: 1rem;
+        }
+        
+        /* Experience Section */
+        .experience {
+            padding: 80px 0;
+            background-color: #000;
+            color: #fff;
+        }
+        
+        .experience-title {
+            text-align: center;
+            font-size: 2.2rem;
+            margin-bottom: 50px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 300;
+            color: #fff;
+        }
+        
+        .experience-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+        
+        .experience-item {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .experience-icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #c9a76c;
+        }
+        
+        .experience-name {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .experience-description {
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: #111;
+            color: #fff;
+            padding: 60px 0 30px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #c9a76c;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: #aaa;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: #c9a76c;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+            font-size: 0.8rem;
+            color: #777;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 992px) {
+            .offers-grid,
+            .experience-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .accommodations-content {
+                flex-direction: column;
+            }
+            
+            .accommodations-image,
+            .accommodations-text {
+                width: 100%;
+            }
+            
+            .footer-content {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hamburger {
+                display: block;
+            }
+            
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: rgba(0, 0, 0, 0.9);
+                flex-direction: column;
+                padding: 20px 0;
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .nav-links li {
+                margin: 10px 0;
+                text-align: center;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .offers-grid,
+            .experience-grid,
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .section-title {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="container">
+            <div class="top-bar-content">
+                <a href="#">Sign In</a>
+                <a href="#">Join Rewards</a>
+                <a href="#">Find Reservations</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">Grand Venetian</div>
+                <nav>
+                    <ul class="nav-links">
+                        <li><a href="#">Rooms & Suites</a></li>
+                        <li><a href="#">Dining</a></li>
+                        <li><a href="#">Entertainment</a></li>
+                        <li><a href="#">Casino</a></li>
+                        <li><a href="#">Meetings</a></li>
+                        <li><a href="#">Offers</a></li>
+                        <li><a href="#" class="booking-button">Book Now</a></li>
+                    </ul>
+                </nav>
+                <div class="hamburger">☰</div>
+            </div>
+        </div>
+    </header>
 
-<!-- End of Talkdesk Code -->
-  </body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Luxury Beyond Imagination</h1>
+            <p>Experience the grandeur of Venice in the heart of the city</p>
+            <a href="#" class="cta-button">Book Your Stay</a>
+        </div>
+    </section>
+
+    <!-- Offers Section -->
+    <section class="offers">
+        <div class="container">
+            <h2 class="section-title">Special Offers</h2>
+            <div class="offers-grid">
+                <div class="offer-item">
+                    <img src="/api/placeholder/600/400" alt="Suite Package">
+                    <div class="offer-overlay">
+                        <h3 class="offer-title">Suite Experience Package</h3>
+                        <a href="#" class="offer-link">Learn More</a>
+                    </div>
+                </div>
+                <div class="offer-item">
+                    <img src="/api/placeholder/600/400" alt="Dining Package">
+                    <div class="offer-overlay">
+                        <h3 class="offer-title">Dining & Entertainment</h3>
+                        <a href="#" class="offer-link">Learn More</a>
+                    </div>
+                </div>
+                <div class="offer-item">
+                    <img src="/api/placeholder/600/400" alt="Spa Package">
+                    <div class="offer-overlay">
+                        <h3 class="offer-title">Spa & Wellness</h3>
+                        <a href="#" class="offer-link">Learn More</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Accommodations Section -->
+    <section class="accommodations">
+        <div class="container">
+            <div class="accommodations-content">
+                <div class="accommodations-image">
+                    <img src="/api/placeholder/700/450" alt="Luxury Suite">
+                </div>
+                <div class="accommodations-text">
+                    <h2>Luxury Suites</h2>
+                    <p>Indulge in the spacious comfort of our award-winning suites. Each room is meticulously designed with Italian-inspired décor and modern amenities to ensure an unforgettable stay.</p>
+                    <p>Our suites feature premium king-size beds, marble bathrooms with oversized tubs, and floor-to-ceiling windows offering breathtaking views of the city skyline.</p>
+                    <a href="#" class="cta-button">Explore Suites</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Experience Section -->
+    <section class="experience">
+        <div class="container">
+            <h2 class="experience-title">The Grand Experience</h2>
+            <div class="experience-grid">
+                <div class="experience-item">
+                    <div class="experience-icon">♠</div>
+                    <h3 class="experience-name">Casino</h3>
+                    <p class="experience-description">Try your luck at our world-class casino featuring the latest slots and table games.</p>
+                </div>
+                <div class="experience-item">
+                    <div class="experience-icon">🍽️</div>
+                    <h3 class="experience-name">Fine Dining</h3>
+                    <p class="experience-description">Savor exquisite cuisines prepared by award-winning chefs in our restaurants.</p>
+                </div>
+                <div class="experience-item">
+                    <div class="experience-icon">🎭</div>
+                    <h3 class="experience-name">Entertainment</h3>
+                    <p class="experience-description">Enjoy spectacular performances and shows featuring top international artists.</p>
+                </div>
+                <div class="experience-item">
+                    <div class="experience-icon">💆</div>
+                    <h3 class="experience-name">Spa</h3>
+                    <p class="experience-description">Rejuvenate your body and mind at our luxurious spa and wellness center.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>About</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Press Room</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Stay</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Rooms & Suites</a></li>
+                        <li><a href="#">Special Offers</a></li>
+                        <li><a href="#">Reservations</a></li>
+                        <li><a href="#">Gift Cards</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Experience</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Restaurants</a></li>
+                        <li><a href="#">Entertainment</a></li>
+                        <li><a href="#">Casino</a></li>
+                        <li><a href="#">Shopping</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Connect</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Sign Up for Emails</a></li>
+                        <li><a href="#">Loyalty Program</a></li>
+                        <li><a href="#">Facebook</a></li>
+                        <li><a href="#">Instagram</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Grand Venetian Resort & Casino. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        document.querySelector('.hamburger').addEventListener('click', function() {
+            document.querySelector('.nav-links').classList.toggle('active');
+        });
+    </script>
+</body>
 </html>
