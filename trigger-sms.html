@@ -156,7 +156,9 @@
                     'Content-Type': 'application/x-www-form-urlencoded',
                     'Referrer-Policy': 'no-referrer'
                 },
-                body: 'grant_type=client_credentials'
+                body: 'grant_type=client_credentials',
+                mode: 'cors',
+                credentials: 'include'
             })
             .then(response => {
                 if (!response.ok) {
