@@ -54,6 +54,40 @@
             }
         }
     </style>
+    <script>
+      // When user lands on chat page
+      function verifyUser() {
+        // Remove the # character and parse the hash string
+        const hashString = window.location.hash.substring(1);
+        const hashParams = new URLSearchParams(hashString);
+
+        const uid = hashParams.get("uid");
+        const timestamp = hashParams.get("ts");
+        const signature = hashParams.get("sig");
+
+        // Log the UID to console
+        console.log("User ID from URL hash:", uid);
+
+        if (!uid || !timestamp || !signature) {
+          console.log("Missing parameters in hash");
+          return false;
+        }
+
+        if (isExpired(timestamp)) {
+          console.log("Link expired");
+          return false;
+        }
+
+        if (!verifySignature(uid, timestamp, signature)) {
+          console.log("Invalid signature");
+          return false;
+        }
+
+        console.log("User verified successfully with ID:", uid);
+        // User verified, continue to chat with this identity
+        return uid;
+      }
+    </script>
 </head>
 <body>
     <div class="background-container">
