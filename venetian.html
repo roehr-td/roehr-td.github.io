@@ -94,6 +94,9 @@
     </div>
 <!-- Start of Talkdesk Code -->
     <script>
+          const hashString = window.location.hash.substring(1);
+          const hashParams = new URLSearchParams(hashString);
+          const uid = hashParams.get('uid');
       var webchat;
       (function(window, document, node, props, configs) {
         if (window.TalkdeskChatSDK) {
