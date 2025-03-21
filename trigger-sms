@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Talkdesk API Integration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .oauth-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #e9f7ef;
+            border-radius: 4px;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f5f5f5;
+            display: none;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 10px 0;
+        }
+        .error {
+            color: #f44336;
+            margin-top: 5px;
+            font-size: 14px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Talkdesk API Integration</h1>
+        
+        <div class="oauth-section">
+            <h2>OAuth 2.0 Configuration</h2>
+            <div class="form-group">
+                <label for="clientId">Client ID:</label>
+                <input type="text" id="clientId" placeholder="Enter your client ID">
+            </div>
+            <div class="form-group">
+                <label for="clientSecret">Client Secret:</label>
+                <input type="text" id="clientSecret" placeholder="Enter your client secret">
+            </div>
+            <div class="form-group">
+                <label for="tokenUrl">Token URL:</label>
+                <input type="text" id="tokenUrl" placeholder="Enter token URL (e.g., https://your-auth-server.com/oauth/token)">
+            </div>
+            <button id="getTokenBtn">Get Access Token</button>
+            <div id="tokenError" class="error"></div>
+            <div id="tokenStatus"></div>
+        </div>
+        
+        <h2>Send Message</h2>
+        <form id="messageForm">
+            <div class="form-group">
+                <label for="phoneNum">Phone Number:</label>
+                <input type="text" id="phoneNum" placeholder="Enter phone number (e.g., +15175758699)" required>
+            </div>
+            <div class="form-group">
+                <label for="message">Message:</label>
+                <textarea id="message" placeholder="Enter your message" required></textarea>
+            </div>
+            <button type="submit" id="sendBtn">Send Message</button>
+        </form>
+        
+        <div id="loading" class="loading">Sending request...</div>
+        <div id="error" class="error"></div>
+        <div id="result" class="result"></div>
+    </div>
+    
+    <script>
+        let accessToken = '';
+        
+        document.getElementById('getTokenBtn').addEventListener('click', getAccessToken);
+        document.getElementById('messageForm').addEventListener('submit', submitForm);
+        
+        function getAccessToken(e) {
+            e.preventDefault();
+            
+            const clientId = document.getElementById('clientId').value.trim();
+            const clientSecret = document.getElementById('clientSecret').value.trim();
+            const tokenUrl = document.getElementById('tokenUrl').value.trim();
+            const tokenError = document.getElementById('tokenError');
+            const tokenStatus = document.getElementById('tokenStatus');
+            
+            if (!clientId || !clientSecret || !tokenUrl) {
+                tokenError.textContent = 'Please fill in all OAuth credentials';
+                tokenError.style.display = 'block';
+                return;
+            }
+            
+            tokenError.style.display = 'none';
+            tokenStatus.textContent = 'Requesting token...';
+            
+            // Create basic auth token
+            const basicAuth = btoa(`${clientId}:${clientSecret}`);
+            
+            fetch(tokenUrl, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Basic ${basicAuth}`,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: 'grant_type=client_credentials'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                accessToken = data.access_token;
+                tokenStatus.textContent = 'Access token received successfully!';
+                tokenStatus.style.color = '#4CAF50';
+            })
+            .catch(error => {
+                tokenError.textContent = `Error obtaining token: ${error.message}`;
+                tokenError.style.display = 'block';
+                tokenStatus.textContent = '';
+            });
+        }
+        
+        function submitForm(e) {
+            e.preventDefault();
+            
+            const phoneNum = document.getElementById('phoneNum').value.trim();
+            const message = document.getElementById('message').value.trim();
+            const resultDiv = document.getElementById('result');
+            const loadingDiv = document.getElementById('loading');
+            const errorDiv = document.getElementById('error');
+            
+            // Basic validation
+            if (!phoneNum || !message) {
+                errorDiv.textContent = 'Please fill in all fields';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            if (!accessToken) {
+                errorDiv.textContent = 'Please obtain an access token first';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            // Hide previous results and errors
+            resultDiv.style.display = 'none';
+            errorDiv.style.display = 'none';
+            loadingDiv.style.display = 'block';
+            
+            // Prepare request data
+            const requestData = {
+                phone_num: phoneNum,
+                message: message
+            };
+            
+            // Send API request
+            fetch('https://api.talkdeskapp.com/flows/12f2364ede774d429ba8845dc65b2e1a/interactions', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            })
+            .then(response => {
+                loadingDiv.style.display = 'none';
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                
+                return response.json();
+            })
+            .then(data => {
+                // Display result
+                resultDiv.innerHTML = `<h3>Response:</h3><pre>${JSON.stringify(data, null, 2)}</pre>`;
+                resultDiv.style.display = 'block';
+            })
+            .catch(error => {
+                loadingDiv.style.display = 'none';
+                errorDiv.textContent = `Error: ${error.message}`;
+                errorDiv.style.display = 'block';
+            });
+        }
+    </script>
+</body>
+</html>
