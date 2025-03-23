@@ -94,10 +94,12 @@
     </div>
 <!-- Start of Talkdesk Code -->
     <script>
-          const hashString = window.location.hash.substring(1);
-          const hashParams = new URLSearchParams(hashString);
-          const uid = hashParams.get('uid');
-      var webchat;
+        
+        const hashString = window.location.hash.substring(1);
+        const hashParams = new URLSearchParams(hashString);
+        const uid = hashParams.get('uid');
+
+    var webchat;
       (function(window, document, node, props, configs) {
         if (window.TalkdeskChatSDK) {
           console.error("TalkdeskChatSDK already included");
@@ -124,7 +126,7 @@
            * modify the webchat.setContextParam parameters to pass in the data you need.
            */
            function setContext() {
-             webchat.setContextParam({ "var1": uid, "var2": "value2", "var3": 100 })
+             webchat.setContextParam({ "td_contact_person_identification": uid, "var2": "value2", "var3": 100 })
            }
            // Send data when the chat conversation is initiated
            webchat.onConversationStart = function() {
