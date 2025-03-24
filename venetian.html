@@ -149,7 +149,7 @@
       window.visualViewport.addEventListener('resize', function() {
         setTimeout(function() {
           // Find the chat input element (adjust selector if needed)
-          var chatInputEl = document.querySelector('.td-chat-input, .td-user-input, #tdWebchat input[type="text"]');
+          var chatInputEl = document.querySelector('.td-chat-input, .user-input-area, #tdWebchat input[type="text"]');
           if (chatInputEl) {
             chatInputEl.scrollIntoView({behavior: 'smooth', block: 'end'});
           } else {
