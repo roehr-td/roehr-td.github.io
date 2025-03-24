@@ -99,51 +99,99 @@
         const hashParams = new URLSearchParams(hashString);
         const uid = hashParams.get('uid');
 
-    var webchat;
-      (function(window, document, node, props, configs) {
-        if (window.TalkdeskChatSDK) {
-          console.error("TalkdeskChatSDK already included");
-          return;
+        var webchat;
+(function(window, document, node, props, configs) {
+  if (window.TalkdeskChatSDK) {
+    console.error("TalkdeskChatSDK already included");
+    return;
+  }
+  var divContainer = document.createElement("div");
+  divContainer.id = node;
+  document.body.appendChild(divContainer);
+  var src = "https://talkdeskchatsdk.talkdeskapp.com/v2/talkdeskchatsdk.js";
+  var script = document.createElement("script");
+  var firstScriptTag = document.getElementsByTagName("script")[0];
+  script.type = "text/javascript";
+  script.charset = "UTF-8";
+  script.id = "tdwebchatscript";
+  script.src = src;
+  script.async = true;
+  firstScriptTag.parentNode.insertBefore(script, firstScriptTag);
+  script.onload = function() {
+    webchat = TalkdeskChatSDK(node, props);
+    webchat.init(configs);
+    
+    // Add mobile keyboard handling
+    handleMobileKeyboard();
+    
+    /*
+     * Send custom data from your website to TalkDesk!
+     * If you would like to do it, you need to remove the following commented code and
+     * modify the webchat.setContextParam parameters to pass in the data you need.
+     */
+     function setContext() {
+       webchat.setContextParam({ "td_contact_person_identification": uid, "var2": "value2", "var3": 100 })
+     }
+     // Send data when the chat conversation is initiated
+     webchat.onConversationStart = function() {
+       setContext()
+     }
+     // Send data when the chat widget is open
+     webchat.onOpenWebchat = function() {
+       setContext()
+     }
+  };
+  
+  // Function to handle mobile keyboard visibility issues
+  function handleMobileKeyboard() {
+    // Use VisualViewport API if available (better for detecting keyboard)
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', function() {
+        setTimeout(function() {
+          // Find the chat input element (adjust selector if needed)
+          var chatInputEl = document.querySelector('.td-chat-input, .td-user-input, #tdWebchat input[type="text"]');
+          if (chatInputEl) {
+            chatInputEl.scrollIntoView({behavior: 'smooth', block: 'end'});
+          } else {
+            // Fallback to scrolling the container
+            var chatContainer = document.getElementById(node);
+            if (chatContainer) {
+              chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+          }
+        }, 300);
+      });
+    }
+    
+    // Also handle window resize events as fallback
+    window.addEventListener('resize', function() {
+      setTimeout(function() {
+        // Scroll to bottom of chat container
+        var chatContainer = document.getElementById(node);
+        if (chatContainer) {
+          chatContainer.scrollTop = chatContainer.scrollHeight;
         }
-        var divContainer = document.createElement("div");
-        divContainer.id = node;
-        document.body.appendChild(divContainer);
-        var src = "https://talkdeskchatsdk.talkdeskapp.com/v2/talkdeskchatsdk.js";
-        var script = document.createElement("script");
-        var firstScriptTag = document.getElementsByTagName("script")[0];
-        script.type = "text/javascript";
-        script.charset = "UTF-8";
-        script.id = "tdwebchatscript";
-        script.src = src;
-        script.async = true;
-        firstScriptTag.parentNode.insertBefore(script, firstScriptTag);
-        script.onload = function() {
-          webchat = TalkdeskChatSDK(node, props);
-          webchat.init(configs);
-          /*
-           * Send custom data from your website to TalkDesk!
-           * If you would like to do it, you need to remove the following commented code and
-           * modify the webchat.setContextParam parameters to pass in the data you need.
-           */
-           function setContext() {
-             webchat.setContextParam({ "td_contact_person_identification": uid, "var2": "value2", "var3": 100 })
-           }
-           // Send data when the chat conversation is initiated
-           webchat.onConversationStart = function() {
-             setContext()
-           }
-           // Send data when the chat widget is open
-           webchat.onOpenWebchat = function() {
-             setContext()
-           }
-        };
-      })(
-        window,
-        document,
-        "tdWebchat",
-        { touchpointId: "88d37d1af7d64ad7909c177c7120119d", accountId: "", region: "td-us-1" },
-        { enableValidation: false, enableEmoji: true, enableUserInput: true, enableAttachments: true }
-      );
+      }, 300);
+    });
+    
+    // Add focus handler for iOS
+    document.addEventListener('click', function(event) {
+      // Check if the clicked element is an input field within the chat
+      if (event.target.tagName === 'INPUT' && 
+          (event.target.closest('#' + node) || document.getElementById(node).contains(event.target))) {
+        setTimeout(function() {
+          window.scrollTo(0, document.body.scrollHeight);
+        }, 300);
+      }
+    }, true);
+  }
+})(
+  window,
+  document,
+  "tdWebchat",
+  { touchpointId: "88d37d1af7d64ad7909c177c7120119d", accountId: "", region: "td-us-1" },
+  { enableValidation: false, enableEmoji: true, enableUserInput: true, enableAttachments: true }
+);
     </script>
 <!-- End of Talkdesk Code -->
 </body>
