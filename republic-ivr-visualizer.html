@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Republic Bank FIServ Go-Live Visualizer</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Mermaid.js for Flowchart rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <!-- Panzoom for interactivity -->
+    <script src="https://unpkg.com/panzoom@9.4.0/dist/panzoom.min.js"></script>
+    <!-- Marked.js for Markdown parsing in AI Chat -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style>
+        /* Custom scrollbar for sidebar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        #graph-container svg {
+            max-width: none !important;
+            transform-origin: center center;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans overflow-hidden">
+
+    <div class="flex flex-col md:flex-row h-screen w-full">
+        
+        <!-- Left Sidebar: Details and Breakdown -->
+        <aside class="w-full md:w-80 h-1/3 md:h-full bg-white border-b md:border-b-0 md:border-r border-slate-200 shadow-sm flex flex-col z-20 shrink-0">
+            <!-- Header -->
+            <div class="p-5 border-b border-slate-100 flex-shrink-0 bg-white">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-9 h-9 rounded-lg bg-emerald-600 text-white flex items-center justify-center shadow-sm shadow-emerald-200">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m3-4h1m-1 4h1m-5 8h8"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold text-slate-800 leading-tight">Republic Bank IVR</h1>
+                        <p class="text-xs text-slate-500 font-medium">FIServ Go-Live • v19</p>
+                    </div>
+                </div>
+                <p class="text-sm text-slate-500 mt-3 leading-relaxed">Call flow overview mapping Autopilot routing, Salesforce integrations, and FISERV escalations.</p>
+            </div>
+            
+            <!-- Scrollable Content -->
+            <div class="flex-1 overflow-y-auto p-5 space-y-6">
+                <!-- Section 1 -->
+                <div>
+                    <h2 class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-3">1. Virtual Agent & CRM</h2>
+                    <div class="bg-indigo-50/50 hover:bg-indigo-50 transition-colors p-3.5 rounded-xl border border-indigo-100/60 text-sm">
+                        <p class="font-semibold text-indigo-900 mb-1 flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>Autopilot & Salesforce
+                        </p>
+                        <p class="text-indigo-700/80 leading-snug">Callers enter SSN/Member ID. Authenticated callers trigger a Salesforce dip for account data/alerts, then interact with the Banking Autopilot (Virtual Agent).</p>
+                    </div>
+                </div>
+
+                <!-- Section 2 -->
+                <div>
+                    <h2 class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-3">2. Self-Service</h2>
+                    <div class="bg-teal-50/50 hover:bg-teal-50 transition-colors p-3.5 rounded-xl border border-teal-100/60 text-sm">
+                        <p class="font-semibold text-teal-900 mb-1 flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-teal-500"></span>Automated Transfers
+                        </p>
+                        <p class="text-teal-700/80 leading-snug">The Virtual Agent can extract transfer intents, verify accounts, and execute real-time fund transfers via HTTP API connections without agent intervention.</p>
+                    </div>
+                </div>
+
+                <!-- Section 3 -->
+                <div>
+                    <h2 class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-3">3. External Routing</h2>
+                    <div class="bg-rose-50/50 hover:bg-rose-50 transition-colors p-3.5 rounded-xl border border-rose-100/60 text-sm">
+                        <p class="font-semibold text-rose-900 mb-1 flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>FISERV Fallbacks
+                        </p>
+                        <p class="text-rose-700/80 leading-snug">Specific card operations (Activations, Disputes, Lost/Stolen for both DC and CC) are forwarded out to external FISERV numbers.</p>
+                    </div>
+                </div>
+
+                <!-- Section 4 -->
+                <div>
+                    <h2 class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-3">4. Queues & Callbacks</h2>
+                    <div class="bg-amber-50/50 hover:bg-amber-50 transition-colors p-3.5 rounded-xl border border-amber-100/60 text-sm">
+                        <p class="font-semibold text-amber-900 mb-1 flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>EWT Management
+                        </p>
+                        <p class="text-amber-700/80 leading-snug">Calls needing agents calculate Estimated Wait Time (EWT). If EWT is high, the system offers robust callback options (same number or new number).</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer tag with AI Button -->
+            <div class="p-4 border-t border-slate-100 flex flex-col gap-3 bg-white flex-shrink-0">
+                <button id="toggle-chat-btn" class="w-full py-2.5 px-4 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white rounded-lg font-medium text-sm shadow-sm transition-all flex items-center justify-center gap-2">
+                    ✨ Ask AI about Flow
+                </button>
+            </div>
+        </aside>
+
+        <!-- Right Main Area: Interactive Canvas -->
+        <main class="flex-1 h-2/3 md:h-full relative bg-[#f8fafc] flex flex-col overflow-hidden">
+            
+            <!-- Toolbar Map Controls -->
+            <div class="absolute top-4 right-4 z-30 flex gap-2">
+                <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-1 flex items-center text-slate-500">
+                    <button id="zoom-in" class="p-2 hover:bg-slate-100 hover:text-emerald-600 rounded transition-colors" title="Zoom In">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                    </button>
+                    <div class="w-px h-5 bg-slate-200 mx-1"></div>
+                    <button id="zoom-out" class="p-2 hover:bg-slate-100 hover:text-emerald-600 rounded transition-colors" title="Zoom Out">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>
+                    </button>
+                    <div class="w-px h-5 bg-slate-200 mx-1"></div>
+                    <button id="reset" class="p-2 hover:bg-slate-100 hover:text-emerald-600 rounded transition-colors" title="Reset View">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loading" class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[#f8fafc] transition-opacity duration-300">
+                <div class="w-10 h-10 border-4 border-slate-200 border-t-emerald-500 rounded-full animate-spin mb-4"></div>
+                <p class="text-slate-500 font-medium">Rendering architecture...</p>
+            </div>
+
+            <!-- Chat Panel Overlay (Hidden by default) -->
+            <div id="ai-chat-panel" class="absolute right-0 top-0 bottom-0 w-full md:w-96 bg-white border-l border-slate-200 shadow-2xl transform translate-x-full transition-transform duration-300 z-40 flex flex-col">
+                <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                    <h3 class="font-bold text-slate-800 flex items-center gap-2">✨ IVR Assistant</h3>
+                    <button id="close-chat-btn" class="text-slate-400 hover:text-slate-600 p-1">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+                <div id="chat-messages" class="flex-1 overflow-y-auto p-4 flex flex-col gap-4 text-sm">
+                    <div class="bg-slate-100 text-slate-800 p-3 rounded-xl rounded-tl-none self-start max-w-[85%]">
+                        Hello! I am grounded on the Republic Bank FIServ Go-Live JSON configuration. Ask me anything about how this IVR operates, such as:
+                        <ul class="list-disc pl-4 mt-2 text-xs">
+                            <li>How do funds transfers work?</li>
+                            <li>Where do credit card dispute calls route?</li>
+                            <li>What happens if EWT is high?</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="p-4 border-t border-slate-100 bg-white">
+                    <form id="chat-form" class="flex gap-2">
+                        <input type="text" id="chat-input" placeholder="Ask a question..." class="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                        <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-lg transition-colors flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Graph Container (Panzoom Target) -->
+            <div id="graph-wrapper" class="w-full h-full cursor-grab active:cursor-grabbing overflow-hidden">
+                <div id="graph-container" class="w-full h-full flex items-center justify-center opacity-0 transition-opacity duration-700 min-w-max min-h-max p-10">
+                    <!-- Mermaid will render SVG here -->
+                </div>
+            </div>
+            
+            <div class="absolute bottom-4 right-4 z-10 pointer-events-none">
+                 <p class="text-xs text-slate-400 font-medium tracking-wide bg-white/80 px-2 py-1 rounded shadow-sm border border-slate-200">Drag to Pan • Scroll to Zoom</p>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // Store Mermaid Instance State
+        let pzInstance = null;
+
+        // Base Graph (Logical Flow)
+        const graphDefStandard = `
+        graph TD
+            classDef startNode fill:#f8fafc,stroke:#94a3b8,stroke-width:2px,color:#0f172a,rx:24px,ry:24px;
+            classDef routing fill:#eff6ff,stroke:#60a5fa,stroke-width:2px,color:#1e3a8a,rx:8px,ry:8px;
+            classDef auth fill:#fefce8,stroke:#facc15,stroke-width:2px,color:#713f12,rx:8px,ry:8px;
+            classDef va fill:#f5f3ff,stroke:#a78bfa,stroke-width:2px,color:#4c1d95,rx:8px,ry:8px;
+            classDef menu fill:#f0fdf4,stroke:#4ade80,stroke-width:2px,color:#14532d,rx:8px,ry:8px;
+            classDef ext fill:#fff1f2,stroke:#f43f5e,stroke-width:2px,color:#881337,rx:8px,ry:8px;
+            classDef queue fill:#e0f2fe,stroke:#38bdf8,stroke-width:2px,color:#0c4a6e,rx:8px,ry:8px;
+            classDef cb fill:#fdf4ff,stroke:#e879f9,stroke-width:2px,color:#701a75,rx:8px,ry:8px;
+
+            Start["Incoming Call"]
+            
+            subgraph Group1 ["1. Initial Routing"]
+                DNISCheck{"Direct Number Check<br>(DNIS)"}
+                WelcomeIVR{"Welcome Menu<br>EN/SP"}
+                SetSpanish["Set Language: SP"]
+            end
+
+            subgraph Group2 ["2. Self-Service & Virtual Agent"]
+                AuthMod["Authentication Module<br>(SSN/Member ID)"]
+                SalesforceDip["Salesforce Data Dip<br>(Account & Alerts)"]
+                BankVA{"Banking Autopilot<br>(Virtual Agent)"}
+                TransferAPI["Execute Funds Transfer<br>API"]
+            end
+
+            subgraph Group3 ["3. Traditional Menus"]
+                OptOut{"Opt-Out Menu"}
+                Suspicious{"Suspicious Menu"}
+                DebitMenu{"Debit Card Menu"}
+                CreditMenu{"Credit Card Menu"}
+            end
+
+            subgraph Group4 ["4. External FISERV Routing"]
+                FiservDCAct[["FISERV DC Activation"]]
+                FiservDCLost[["FISERV DC Lost/Stolen"]]
+                FiservCCAct[["FISERV CC Activation"]]
+                FiservCCDisp[["FISERV CC Dispute"]]
+                FiservCCIVR[["FISERV CC IVR & Activity"]]
+                AssocDir[["Associate Directory"]]
+            end
+
+            subgraph Group5 ["5. Queueing & Callback"]
+                HoursHol{"Hours & Holidays Check"}
+                PlayClosed["Play Closed Message"]
+                CheckEWT{"Calculate EWT"}
+                Queue["Assignment & Dial<br>(Support/CardOps/Spanish)"]
+                OfferCB{"Offer Callback"}
+                ExecCB["Execute Callback<br>(Same/New Number)"]
+            end
+
+            %% Paths
+            Start --> DNISCheck
+            DNISCheck -->|"Match Specific Queue"| HoursHol
+            DNISCheck -->|"No Match"| WelcomeIVR
+
+            WelcomeIVR -->|"Press 0 (Self Service)"| AuthMod
+            WelcomeIVR -->|"Press 5"| AssocDir
+            WelcomeIVR -->|"Press 2"| SetSpanish
+            WelcomeIVR -->|"Timeout/Other"| OptOut
+            SetSpanish --> HoursHol
+            
+            AuthMod -->|"Authenticated"| SalesforceDip
+            AuthMod -->|"Unauthenticated"| OptOut
+            SalesforceDip --> BankVA
+            
+            BankVA -->|"Intent: Transfer"| TransferAPI
+            BankVA -->|"Escalation/Other"| OptOut
+
+            TransferAPI -->|"Success/Fail Msg"| BankVA
+            
+            OptOut -->|"Press 1"| Suspicious
+            OptOut -->|"Press 2"| HoursHol
+            OptOut -->|"Press 3"| DebitMenu
+            OptOut -->|"Press 4"| CreditMenu
+
+            Suspicious -->|"Selections"| HoursHol
+            DebitMenu -->|"Activate"| FiservDCAct
+            DebitMenu -->|"Lost/Stolen"| FiservDCLost
+            DebitMenu -->|"Other"| HoursHol
+
+            CreditMenu -->|"Activate"| FiservCCAct
+            CreditMenu -->|"Dispute"| FiservCCDisp
+            CreditMenu -->|"Balance/Payment"| FiservCCIVR
+            CreditMenu -->|"Other"| HoursHol
+
+            HoursHol -->|"Closed"| PlayClosed
+            HoursHol -->|"Open"| CheckEWT
+            
+            CheckEWT --> Queue
+            Queue -->|"Wait/High EWT"| OfferCB
+            OfferCB -->|"Accepts"| ExecCB
+            OfferCB -->|"Declines"| Queue
+
+            class Start startNode;
+            class DNISCheck,WelcomeIVR,OptOut,Suspicious,DebitMenu,CreditMenu menu;
+            class AuthMod,SalesforceDip auth;
+            class BankVA,TransferAPI va;
+            class FiservDCAct,FiservDCLost,FiservCCAct,FiservCCDisp,FiservCCIVR,AssocDir ext;
+            class HoursHol,CheckEWT,Queue,PlayClosed,SetSpanish queue;
+            class OfferCB,ExecCB cb;
+        `;
+
+        // Graph with Mock Reporting Metrics Injected
+        const graphDefMetrics = `
+        graph TD
+            classDef startNode fill:#f8fafc,stroke:#94a3b8,stroke-width:2px,color:#0f172a,rx:24px,ry:24px;
+            classDef routing fill:#eff6ff,stroke:#60a5fa,stroke-width:2px,color:#1e3a8a,rx:8px,ry:8px;
+            classDef auth fill:#fefce8,stroke:#facc15,stroke-width:2px,color:#713f12,rx:8px,ry:8px;
+            classDef va fill:#f5f3ff,stroke:#a78bfa,stroke-width:2px,color:#4c1d95,rx:8px,ry:8px;
+            classDef menu fill:#f0fdf4,stroke:#4ade80,stroke-width:2px,color:#14532d,rx:8px,ry:8px;
+            classDef ext fill:#fff1f2,stroke:#f43f5e,stroke-width:2px,color:#881337,rx:8px,ry:8px;
+            classDef queue fill:#e0f2fe,stroke:#38bdf8,stroke-width:2px,color:#0c4a6e,rx:8px,ry:8px;
+            classDef cb fill:#fdf4ff,stroke:#e879f9,stroke-width:2px,color:#701a75,rx:8px,ry:8px;
+
+            Start["Incoming Call<br><b style='color:#0369a1'>Total: 14,250</b>"]
+            
+            subgraph Group1 ["1. Initial Routing"]
+                DNISCheck{"Direct Number Check<br><b style='color:#0369a1'>Vol: 14,250</b>"}
+                WelcomeIVR{"Welcome Menu<br><b style='color:#0369a1'>Vol: 10,120</b> | <b style='color:#be123c'>Abd: 4.2%</b>"}
+                SetSpanish["Set Language: SP<br><b style='color:#0369a1'>Vol: 850</b>"]
+            end
+
+            subgraph Group2 ["2. Self-Service & Virtual Agent"]
+                AuthMod["Authentication Module<br><b style='color:#0369a1'>Vol: 6,400</b> | <b style='color:#15803d'>Auth: 82%</b>"]
+                SalesforceDip["Salesforce Data Dip<br><b style='color:#0369a1'>Vol: 5,248</b>"]
+                BankVA{"Banking Autopilot<br><b style='color:#0369a1'>Vol: 5,248</b> | <b style='color:#15803d'>Res: 65%</b>"}
+                TransferAPI["Execute Funds Transfer<br><b style='color:#0369a1'>Vol: 1,120</b>"]
+            end
+
+            subgraph Group3 ["3. Traditional Menus"]
+                OptOut{"Opt-Out Menu<br><b style='color:#0369a1'>Vol: 3,250</b> | <b style='color:#be123c'>Abd: 8.5%</b>"}
+                Suspicious{"Suspicious Menu<br><b style='color:#0369a1'>Vol: 450</b>"}
+                DebitMenu{"Debit Card Menu<br><b style='color:#0369a1'>Vol: 1,200</b>"}
+                CreditMenu{"Credit Card Menu<br><b style='color:#0369a1'>Vol: 1,400</b>"}
+            end
+
+            subgraph Group4 ["4. External FISERV Routing"]
+                FiservDCAct[["FISERV DC Activation<br><b style='color:#0369a1'>Vol: 400</b>"]]
+                FiservDCLost[["FISERV DC Lost/Stolen<br><b style='color:#0369a1'>Vol: 150</b>"]]
+                FiservCCAct[["FISERV CC Activation<br><b style='color:#0369a1'>Vol: 520</b>"]]
+                FiservCCDisp[["FISERV CC Dispute<br><b style='color:#0369a1'>Vol: 210</b>"]]
+                FiservCCIVR[["FISERV CC IVR<br><b style='color:#0369a1'>Vol: 600</b>"]]
+                AssocDir[["Associate Directory<br><b style='color:#0369a1'>Vol: 180</b>"]]
+            end
+
+            subgraph Group5 ["5. Queueing & Callback"]
+                HoursHol{"Hours & Holidays Check<br><b style='color:#0369a1'>Vol: 4,800</b>"}
+                PlayClosed["Play Closed Message<br><b style='color:#0369a1'>Vol: 450</b>"]
+                CheckEWT{"Calculate EWT<br><b style='color:#0369a1'>Vol: 4,350</b>"}
+                Queue["Assignment & Dial<br><b style='color:#0369a1'>Vol: 4,350</b> | <b style='color:#be123c'>Abd: 11%</b>"]
+                OfferCB{"Offer Callback<br><b style='color:#0369a1'>Vol: 1,200</b>"}
+                ExecCB["Execute Callback<br><b style='color:#0369a1'>Accepted: 780</b>"]
+            end
+
+            %% Paths
+            Start --> DNISCheck
+            DNISCheck -->|"Match"| HoursHol
+            DNISCheck -->|"No Match"| WelcomeIVR
+
+            WelcomeIVR -->|"Press 0"| AuthMod
+            WelcomeIVR -->|"Press 5"| AssocDir
+            WelcomeIVR -->|"Press 2"| SetSpanish
+            WelcomeIVR -->|"Timeout/Other"| OptOut
+            SetSpanish --> HoursHol
+            
+            AuthMod -->|"Auth Success"| SalesforceDip
+            AuthMod -->|"Auth Fail"| OptOut
+            SalesforceDip --> BankVA
+            
+            BankVA -->|"Intent: Transfer"| TransferAPI
+            BankVA -->|"Escalation"| OptOut
+
+            TransferAPI --> BankVA
+            
+            OptOut -->|"Press 1"| Suspicious
+            OptOut -->|"Press 2"| HoursHol
+            OptOut -->|"Press 3"| DebitMenu
+            OptOut -->|"Press 4"| CreditMenu
+
+            Suspicious -->|"Options"| HoursHol
+            DebitMenu -->|"Activate"| FiservDCAct
+            DebitMenu -->|"Lost/Stolen"| FiservDCLost
+            DebitMenu -->|"Other"| HoursHol
+
+            CreditMenu -->|"Activate"| FiservCCAct
+            CreditMenu -->|"Dispute"| FiservCCDisp
+            CreditMenu -->|"Balance/Pmt"| FiservCCIVR
+            CreditMenu -->|"Other"| HoursHol
+
+            HoursHol -->|"Closed"| PlayClosed
+            HoursHol -->|"Open"| CheckEWT
+            
+            CheckEWT --> Queue
+            Queue -->|"Wait/High EWT"| OfferCB
+            OfferCB -->|"Accepts"| ExecCB
+            OfferCB -->|"Declines"| Queue
+
+            class Start startNode;
+            class DNISCheck,WelcomeIVR,OptOut,Suspicious,DebitMenu,CreditMenu menu;
+            class AuthMod,SalesforceDip auth;
+            class BankVA,TransferAPI va;
+            class FiservDCAct,FiservDCLost,FiservCCAct,FiservCCDisp,FiservCCIVR,AssocDir ext;
+            class HoursHol,CheckEWT,Queue,PlayClosed,SetSpanish queue;
+            class OfferCB,ExecCB cb;
+        `;
+
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: {
+                fontFamily: 'ui-sans-serif, system-ui, -apple-system, sans-serif',
+                primaryColor: '#ffffff',
+                primaryBorderColor: '#cbd5e1',
+                lineColor: '#64748b',
+                textColor: '#0f172a',
+                clusterBkg: '#f8fafc',
+                clusterBorder: '#e2e8f0'
+            },
+            flowchart: {
+                curve: 'basis',
+                nodeSpacing: 40,
+                rankSpacing: 45,
+                padding: 15
+            }
+        });
+
+        async function renderGraph(definition) {
+            const container = document.getElementById('graph-container');
+            const loader = document.getElementById('loading');
+            
+            // Show loader
+            loader.style.display = 'flex';
+            loader.style.opacity = '1';
+            container.style.opacity = '0';
+
+            try {
+                // Destroy old panzoom instance if it exists
+                if (pzInstance) {
+                    pzInstance.dispose();
+                    pzInstance = null;
+                }
+
+                // Render new SVG
+                const { svg } = await mermaid.render('mermaid-svg-instance', definition);
+                container.innerHTML = svg;
+
+                const svgElement = container.querySelector('svg');
+                svgElement.setAttribute('width', '100%');
+                svgElement.setAttribute('height', '100%');
+                svgElement.style.maxWidth = 'none';
+
+                // Reinitialize Panzoom
+                pzInstance = panzoom(svgElement, {
+                    maxZoom: 5,
+                    minZoom: 0.2,
+                    bounds: true,
+                    boundsPadding: 0.2,
+                    smoothScroll: false
+                });
+
+                // Attach controls to new instance
+                document.getElementById('zoom-in').onclick = () => pzInstance.zoomTo(container.clientWidth / 2, container.clientHeight / 2, 1.25);
+                document.getElementById('zoom-out').onclick = () => pzInstance.zoomTo(container.clientWidth / 2, container.clientHeight / 2, 0.8);
+                document.getElementById('reset').onclick = () => {
+                    pzInstance.moveTo(0, 0);
+                    pzInstance.zoomAbs(0, 0, 1);
+                };
+
+                // Hide loader
+                setTimeout(() => {
+                    loader.style.opacity = '0';
+                    container.style.opacity = '1';
+                    setTimeout(() => loader.style.display = 'none', 300);
+                }, 200);
+
+            } catch (error) {
+                console.error("Error rendering graph:", error);
+                loader.innerHTML = `<p class="text-red-500 font-medium">Failed to render diagram.</p>`;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderGraph(graphDefStandard);
+        });
+
+        // --- AI Chatbot Integration using Gemini API ---
+        const apiKey = ""; // Gemini API Key injected by environment
+        const chatPanel = document.getElementById('ai-chat-panel');
+        const toggleChatBtn = document.getElementById('toggle-chat-btn');
+        const closeChatBtn = document.getElementById('close-chat-btn');
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input');
+        const chatMessages = document.getElementById('chat-messages');
+
+        let chatHistory = [];
+
+        toggleChatBtn.addEventListener('click', () => chatPanel.classList.remove('translate-x-full'));
+        closeChatBtn.addEventListener('click', () => chatPanel.classList.add('translate-x-full'));
+
+        function appendMessage(text, isUser = false) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `p-3 rounded-xl max-w-[85%] ${isUser ? 'bg-purple-600 text-white rounded-tr-none self-end' : 'bg-slate-100 text-slate-800 rounded-tl-none self-start'}`;
+            
+            if (isUser) {
+                msgDiv.innerText = text;
+            } else {
+                msgDiv.innerHTML = marked.parse(text);
+                msgDiv.querySelectorAll('p').forEach(p => p.classList.add('mb-2', 'last:mb-0'));
+                msgDiv.querySelectorAll('ul').forEach(ul => ul.classList.add('list-disc', 'pl-4', 'mb-2'));
+                msgDiv.querySelectorAll('ol').forEach(ol => ol.classList.add('list-decimal', 'pl-4', 'mb-2'));
+            }
+            chatMessages.appendChild(msgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function addTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.id = 'typing-indicator';
+            typingDiv.className = 'bg-slate-100 text-slate-500 p-3 rounded-xl rounded-tl-none self-start max-w-[85%] flex gap-1 items-center h-10';
+            typingDiv.innerHTML = '<div class="w-2 h-2 bg-slate-400 rounded-full animate-bounce"></div><div class="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div><div class="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>';
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const typingDiv = document.getElementById('typing-indicator');
+            if (typingDiv) typingDiv.remove();
+        }
+
+        async function askGemini(userText) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            
+            // Ground the AI on the current flow
+            const currentGraph = graphDefStandard;
+            const systemPrompt = `You are an expert IVR and contact center architect analyzing the Republic Bank FIServ Go-Live flow.
+Here is the raw Mermaid.js graph definition of the flowchart the user is currently looking at:
+
+${currentGraph}
+
+Answer the user's questions about this flow accurately and concisely. Use markdown for formatting.`;
+
+            chatHistory.push({ role: "user", parts: [{ text: userText }] });
+
+            const payload = {
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+                contents: chatHistory
+            };
+
+            const retries = 5;
+            const delays = [1000, 2000, 4000, 8000, 16000];
+
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    
+                    const data = await response.json();
+                    const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                    
+                    if (aiText) {
+                        chatHistory.push({ role: "model", parts: [{ text: aiText }] });
+                        return aiText;
+                    }
+                    throw new Error("Empty response");
+                } catch (e) {
+                    if (i === retries - 1) return "Sorry, I encountered an error connecting to the AI service. Please try again later.";
+                    await new Promise(r => setTimeout(r, delays[i]));
+                }
+            }
+        }
+
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = chatInput.value.trim();
+            if (!text) return;
+
+            appendMessage(text, true);
+            chatInput.value = '';
+            chatInput.disabled = true;
+            addTypingIndicator();
+
+            const aiResponse = await askGemini(text);
+
+            removeTypingIndicator();
+            appendMessage(aiResponse, false);
+            chatInput.disabled = false;
+            chatInput.focus();
+        });
+    </script>
+</body>
+</html>

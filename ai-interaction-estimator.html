@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Interaction Estimator — Talkdesk</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d0f12;
+    --surface: #13161b;
+    --surface2: #1a1e25;
+    --border: #252a33;
+    --border-bright: #2f3640;
+    --text: #e8eaed;
+    --text-dim: #6b7585;
+    --text-mid: #9aa3b2;
+    --accent: #00c2ff;
+    --accent-dim: rgba(0,194,255,0.1);
+    --accent-border: rgba(0,194,255,0.25);
+    --cons: #ff6b6b;
+    --cons-dim: rgba(255,107,107,0.08);
+    --base: #00c2ff;
+    --base-dim: rgba(0,194,255,0.08);
+    --opti: #00e5a0;
+    --opti-dim: rgba(0,229,160,0.08);
+    --warn: #f5a623;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-left { display: flex; align-items: center; gap: 16px; }
+  .logo {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+    background: var(--accent-dim);
+    border: 1px solid var(--accent-border);
+    padding: 4px 10px;
+    border-radius: 3px;
+  }
+  .header-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-mid);
+    letter-spacing: 0.02em;
+  }
+  .header-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+    padding: 2px 8px;
+    border-radius: 2px;
+  }
+
+  /* LAYOUT */
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 32px 32px;
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  /* PANELS */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .panel-header {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .panel-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .panel-body { padding: 20px; }
+
+  /* FORM INPUTS */
+  .field { margin-bottom: 20px; }
+  .field:last-child { margin-bottom: 0; }
+
+  .field-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 6px;
+  }
+  .label-text {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-mid);
+    letter-spacing: 0.03em;
+  }
+  .label-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .label-hint {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+
+  input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 2px;
+    background: var(--border-bright);
+    outline: none;
+    border-radius: 1px;
+    cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: 2px solid var(--bg);
+    box-shadow: 0 0 8px rgba(0,194,255,0.4);
+    transition: box-shadow 0.2s;
+  }
+  input[type=range]::-webkit-slider-thumb:hover {
+    box-shadow: 0 0 14px rgba(0,194,255,0.7);
+  }
+  input[type=number] {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 8px 12px;
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  input[type=number]:focus { border-color: var(--accent); }
+  input[type=number]::-webkit-inner-spin-button { opacity: 0.3; }
+
+  .channel-toggle {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+  .channel-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 8px;
+    color: var(--text-dim);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    letter-spacing: 0.06em;
+    transition: all 0.15s;
+  }
+  .channel-btn:hover { border-color: var(--border-bright); color: var(--text-mid); }
+  .channel-btn.active {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 20px 0;
+  }
+
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-dim);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  /* ASSUMPTIONS TOGGLE */
+  .assumptions-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    margin-top: 4px;
+  }
+  .toggle-switch {
+    width: 32px;
+    height: 18px;
+    background: var(--border-bright);
+    border-radius: 9px;
+    position: relative;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+  .toggle-switch::after {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    top: 3px;
+    left: 3px;
+    transition: all 0.2s;
+  }
+  .toggle-switch.on { background: var(--accent); }
+  .toggle-switch.on::after { left: 17px; background: white; }
+  .toggle-label { font-size: 12px; color: var(--text-dim); }
+
+  /* RESULTS */
+  .results-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .scenario-card {
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    transition: border-color 0.2s;
+  }
+  .scenario-card:hover { border-color: var(--border-bright); }
+
+  .scenario-header {
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .scenario-name {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .scenario-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 2px;
+    font-weight: 600;
+  }
+
+  .scenario-body { padding: 16px; background: var(--bg); }
+
+  .metric-main {
+    margin-bottom: 16px;
+  }
+  .metric-number {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+  .metric-label {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .metric-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 5px 0;
+    border-top: 1px solid var(--border);
+  }
+  .metric-row-label { font-size: 11px; color: var(--text-dim); }
+  .metric-row-val {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  /* CONSERVATIVE */
+  .scenario-card.cons .scenario-header { background: var(--cons-dim); border-bottom: 1px solid rgba(255,107,107,0.12); }
+  .scenario-card.cons .scenario-name { color: var(--cons); }
+  .scenario-card.cons .scenario-tag { background: rgba(255,107,107,0.15); color: var(--cons); }
+  .scenario-card.cons .metric-number { color: var(--cons); }
+
+  /* BASE */
+  .scenario-card.base .scenario-header { background: var(--base-dim); border-bottom: 1px solid rgba(0,194,255,0.12); }
+  .scenario-card.base .scenario-name { color: var(--base); }
+  .scenario-card.base .scenario-tag { background: rgba(0,194,255,0.15); color: var(--base); }
+  .scenario-card.base .metric-number { color: var(--base); }
+
+  /* OPTIMISTIC */
+  .scenario-card.opti .scenario-header { background: var(--opti-dim); border-bottom: 1px solid rgba(0,229,160,0.12); }
+  .scenario-card.opti .scenario-name { color: var(--opti); }
+  .scenario-card.opti .scenario-tag { background: rgba(0,229,160,0.15); color: var(--opti); }
+  .scenario-card.opti .metric-number { color: var(--opti); }
+
+  /* RAMP TABLE */
+  .ramp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  .ramp-table th {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    text-align: right;
+    padding: 6px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .ramp-table th:first-child { text-align: left; }
+  .ramp-table td {
+    padding: 7px 12px;
+    text-align: right;
+    border-bottom: 1px solid var(--border);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text-mid);
+  }
+  .ramp-table td:first-child {
+    text-align: left;
+    color: var(--text-dim);
+    font-size: 11px;
+    font-family: 'IBM Plex Sans', sans-serif;
+  }
+  .ramp-table tr:last-child td { border-bottom: none; font-weight: 600; color: var(--text); }
+  .ramp-table .cons-val { color: var(--cons); }
+  .ramp-table .base-val { color: var(--base); }
+  .ramp-table .opti-val { color: var(--opti); }
+
+  /* ASSUMPTIONS BOX */
+  .assumptions-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 14px 16px;
+    margin-top: 16px;
+    display: none;
+  }
+  .assumptions-box.visible { display: block; }
+  .assumption-row {
+    display: grid;
+    grid-template-columns: 1fr 80px 80px 80px;
+    gap: 8px;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+  }
+  .assumption-row:last-child { border-bottom: none; }
+  .assumption-row .a-label { font-size: 11px; color: var(--text-dim); }
+  .assumption-row .a-val {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    text-align: center;
+    font-weight: 500;
+  }
+
+  /* COPY BUTTON */
+  .copy-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 7px 14px;
+    color: var(--text-mid);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.04em;
+  }
+  .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .no-data {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-dim);
+    font-size: 13px;
+  }
+
+  .warning-flag {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    background: rgba(245,166,35,0.06);
+    border: 1px solid rgba(245,166,35,0.2);
+    border-radius: 4px;
+    padding: 10px 14px;
+    margin-top: 16px;
+    font-size: 11px;
+    color: var(--warn);
+    line-height: 1.5;
+  }
+  .warning-flag span { flex-shrink: 0; }
+
+  @media (max-width: 900px) {
+    .container { grid-template-columns: 1fr; padding: 16px; }
+    .results-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="logo">TD</div>
+    <div class="header-title">AI Interaction Estimator</div>
+  </div>
+  <div class="header-badge">PRE-SALES // INTERNAL</div>
+</div>
+
+<div class="container">
+
+  <!-- LEFT: INPUTS -->
+  <div>
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Customer Inputs</span>
+      </div>
+      <div class="panel-body">
+
+        <div class="section-label">Channel</div>
+        <div class="channel-toggle">
+          <div class="channel-btn active" data-channel="voice" onclick="setChannel('voice')">VOICE</div>
+          <div class="channel-btn" data-channel="chat" onclick="setChannel('chat')">CHAT</div>
+          <div class="channel-btn" data-channel="blended" onclick="setChannel('blended')">BLENDED</div>
+        </div>
+
+        <div id="blended-split" style="display:none; margin-bottom:20px;">
+          <div class="field-label">
+            <span class="label-text">Voice / Chat Split</span>
+            <span class="label-value" id="split-display">60% / 40%</span>
+          </div>
+          <input type="range" id="voice-split" min="10" max="90" step="5" value="60" oninput="updateSplit()">
+        </div>
+
+        <hr class="divider">
+        <div class="section-label">Volume</div>
+
+        <div class="field">
+          <div class="field-label">
+            <span class="label-text">Monthly Inbound Contacts</span>
+          </div>
+          <div class="label-hint">Total contacts across all channels. If unknown, use agent headcount × 400 as a rough proxy.</div>
+          <input type="number" id="monthly-volume" placeholder="e.g. 50000" oninput="calculate()">
+        </div>
+
+        <div class="field" id="agent-proxy-field">
+          <div class="field-label">
+            <span class="label-text">— OR — Agent Headcount (proxy)</span>
+          </div>
+          <div class="label-hint">Estimates volume at ~400 contacts/agent/month</div>
+          <input type="number" id="agent-count" placeholder="e.g. 125" oninput="agentProxy()">
+        </div>
+
+        <hr class="divider">
+        <div class="section-label">Automation Candidacy</div>
+
+        <div class="field">
+          <div class="field-label">
+            <span class="label-text">Eligible Intent Coverage</span>
+            <span class="label-value" id="eligible-display">35%</span>
+          </div>
+          <div class="label-hint">% of contact volume where AI automation is applicable. Use lower end if intent data is unclear.</div>
+          <input type="range" id="eligible-pct" min="10" max="80" step="5" value="35" oninput="calculate()">
+        </div>
+
+        <div class="field">
+          <div class="field-label">
+            <span class="label-text">Reachability Discount</span>
+            <span class="label-value" id="reach-display">12%</span>
+          </div>
+          <div class="label-hint">Contacts that won't engage with AI (channel drop, immediate opt-out)</div>
+          <input type="range" id="reach-pct" min="5" max="25" step="1" value="12" oninput="calculate()">
+        </div>
+
+        <hr class="divider">
+        <div class="section-label">Ramp</div>
+
+        <div class="field">
+          <div class="field-label">
+            <span class="label-text">Go-Live Month</span>
+            <span class="label-value" id="golive-display">Month 1</span>
+          </div>
+          <input type="range" id="golive-month" min="1" max="6" step="1" value="1" oninput="calculate()">
+        </div>
+
+        <hr class="divider">
+
+        <div class="assumptions-toggle" onclick="toggleAssumptions()">
+          <div class="toggle-switch" id="assump-toggle"></div>
+          <span class="toggle-label">Show scenario assumptions</span>
+        </div>
+
+        <div class="assumptions-box" id="assumptions-box">
+          <div class="assumption-row">
+            <span class="a-label" style="color:var(--text-mid); font-weight:600;">Assumption</span>
+            <span class="a-val" style="color:var(--cons);">CONS</span>
+            <span class="a-val" style="color:var(--base);">BASE</span>
+            <span class="a-val" style="color:var(--opti);">OPTI</span>
+          </div>
+          <div class="assumption-row">
+            <span class="a-label">Containment rate (Y1)</span>
+            <span class="a-val cons-val">55%</span>
+            <span class="a-val base-val">65%</span>
+            <span class="a-val opti-val">77%</span>
+          </div>
+          <div class="assumption-row">
+            <span class="a-label">Containment rate (SS)</span>
+            <span class="a-val cons-val">65%</span>
+            <span class="a-val base-val">75%</span>
+            <span class="a-val opti-val">85%</span>
+          </div>
+          <div class="assumption-row">
+            <span class="a-label">Ramp to steady state</span>
+            <span class="a-val cons-val">9 mo</span>
+            <span class="a-val base-val">6 mo</span>
+            <span class="a-val opti-val">4 mo</span>
+          </div>
+          <div class="assumption-row">
+            <span class="a-label">M1 ramp factor</span>
+            <span class="a-val cons-val">20%</span>
+            <span class="a-val base-val">30%</span>
+            <span class="a-val opti-val">40%</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: RESULTS -->
+  <div id="results-column">
+    <div id="no-data-state" class="panel">
+      <div class="no-data">Enter monthly contact volume to generate estimates</div>
+    </div>
+    <div id="results-content" style="display:none;">
+
+      <div class="results-grid">
+        <!-- Conservative -->
+        <div class="scenario-card cons">
+          <div class="scenario-header">
+            <span class="scenario-name">Conservative</span>
+            <span class="scenario-tag">PROTECT</span>
+          </div>
+          <div class="scenario-body">
+            <div class="metric-main">
+              <div class="metric-number" id="cons-monthly">—</div>
+              <div class="metric-label">interactions / month (SS)</div>
+            </div>
+            <div class="metric-row">
+              <span class="metric-row-label">Containment rate</span>
+              <span class="metric-row-val" id="cons-contain">—</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-row-label">Year 1 total</span>
+              <span class="metric-row-val" id="cons-y1">—</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-row-label">Month 1</span>
+              <span class="metric-row-val" id="cons-m1">—</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Base -->
+        <div class="scenario-card base">
+          <div class="scenario-header">
+            <span class="scenario-name">Base</span>
+            <span class="scenario-tag">RECOMMEND</span>
+          </div>
+          <div class="scenario-body">
+            <div class="metric-main">
+              <div class="metric-number" id="base-monthly">—</div>
+              <div class="metric-label">interactions / month (SS)</div>
+            </div>
+            <div class="metric-row">
+              <span class="metric-row-label">Containment rate</span>
+              <span class="metric-row-val" id="base-contain">—</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-row-label">Year 1 total</span>
+              <span class="metric-row-val" id="base-y1">—</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-row-label">Month 1</span>
+              <span class="metric-row-val" id="base-m1">—</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Optimistic -->
+        <div class="scenario-card opti">
+          <div class="scenario-header">
+            <span class="scenario-name">Optimistic</span>
+            <span class="scenario-tag">UPSIDE</span>
+          </div>
+          <div class="scenario-body">
+            <div class="metric-main">
+              <div class="metric-number" id="opti-monthly">—</div>
+              <div class="metric-label">interactions / month (SS)</div>
+            </div>
+            <div class="metric-row">
+              <span class="metric-row-label">Containment rate</span>
+              <span class="metric-row-val" id="opti-contain">—</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-row-label">Year 1 total</span>
+              <span class="metric-row-val" id="opti-y1">—</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-row-label">Month 1</span>
+              <span class="metric-row-val" id="opti-m1">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RAMP TABLE -->
+      <div class="panel" style="margin-bottom: 16px;">
+        <div class="panel-header">
+          <span class="panel-title">Monthly Ramp — Year 1</span>
+          <button class="copy-btn" onclick="copyTable()">COPY TABLE</button>
+        </div>
+        <div class="panel-body" style="padding: 0;">
+          <table class="ramp-table">
+            <thead>
+              <tr>
+                <th>Month</th>
+                <th style="color:var(--cons)">CONS</th>
+                <th style="color:var(--base)">BASE</th>
+                <th style="color:var(--opti)">OPTI</th>
+              </tr>
+            </thead>
+            <tbody id="ramp-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- FLAGS -->
+      <div id="warning-flags"></div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+let channel = 'voice';
+let showAssumptions = false;
+
+const SCENARIOS = {
+  cons: { containSS: 0.65, containY1: 0.55, rampMonths: 9, m1Factor: 0.20 },
+  base: { containSS: 0.75, containY1: 0.65, rampMonths: 6, m1Factor: 0.30 },
+  opti: { containSS: 0.85, containY1: 0.77, rampMonths: 4, m1Factor: 0.40 },
+};
+
+// Channel candidacy defaults
+const CHANNEL_ELIGIBLE = { voice: 0.35, chat: 0.45, blended: 0.40 };
+
+function setChannel(c) {
+  channel = c;
+  document.querySelectorAll('.channel-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`[data-channel="${c}"]`).classList.add('active');
+  document.getElementById('blended-split').style.display = c === 'blended' ? 'block' : 'none';
+
+  // Set eligible default for channel
+  const slider = document.getElementById('eligible-pct');
+  slider.value = Math.round(CHANNEL_ELIGIBLE[c] * 100);
+  document.getElementById('eligible-display').textContent = slider.value + '%';
+  calculate();
+}
+
+function updateSplit() {
+  const v = document.getElementById('voice-split').value;
+  document.getElementById('split-display').textContent = `${v}% / ${100 - v}%`;
+  calculate();
+}
+
+function agentProxy() {
+  const agents = parseFloat(document.getElementById('agent-count').value) || 0;
+  if (agents > 0) {
+    document.getElementById('monthly-volume').value = Math.round(agents * 400);
+  }
+  calculate();
+}
+
+function fmt(n) {
+  if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+  if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+  return Math.round(n).toLocaleString();
+}
+
+function getRampFactor(month, goLive, rampMonths, m1) {
+  if (month < goLive) return 0;
+  const elapsed = month - goLive + 1;
+  if (elapsed <= 0) return 0;
+  if (elapsed >= rampMonths) return 1.0;
+  // Linear ramp from m1Factor to 1.0
+  return m1 + (1 - m1) * ((elapsed - 1) / (rampMonths - 1));
+}
+
+function calculate() {
+  const volume = parseFloat(document.getElementById('monthly-volume').value) || 0;
+  const eligiblePct = parseFloat(document.getElementById('eligible-pct').value) / 100;
+  const reachDiscount = parseFloat(document.getElementById('reach-pct').value) / 100;
+  const goLive = parseInt(document.getElementById('golive-month').value);
+
+  document.getElementById('eligible-display').textContent = Math.round(eligiblePct * 100) + '%';
+  document.getElementById('reach-display').textContent = Math.round(reachDiscount * 100) + '%';
+  document.getElementById('golive-display').textContent = 'Month ' + goLive;
+
+  if (!volume || volume <= 0) {
+    document.getElementById('no-data-state').style.display = 'block';
+    document.getElementById('results-content').style.display = 'none';
+    return;
+  }
+
+  document.getElementById('no-data-state').style.display = 'none';
+  document.getElementById('results-content').style.display = 'block';
+
+  const addressable = volume * eligiblePct * (1 - reachDiscount);
+
+  const results = {};
+  ['cons', 'base', 'opti'].forEach(s => {
+    const sc = SCENARIOS[s];
+    const ss = addressable * sc.containSS;
+    const m1 = addressable * sc.containSS * sc.m1Factor;
+
+    // Year 1 ramp sum
+    let y1 = 0;
+    const monthly = [];
+    for (let mo = 1; mo <= 12; mo++) {
+      const factor = getRampFactor(mo, goLive, sc.rampMonths, sc.m1Factor);
+      const val = Math.round(addressable * sc.containSS * factor);
+      monthly.push(val);
+      y1 += val;
+    }
+
+    results[s] = { ss, m1, y1, monthly, contain: sc.containSS };
+  });
+
+  // Update cards
+  ['cons', 'base', 'opti'].forEach(s => {
+    document.getElementById(`${s}-monthly`).textContent = fmt(results[s].ss);
+    document.getElementById(`${s}-contain`).textContent = Math.round(results[s].contain * 100) + '%';
+    document.getElementById(`${s}-y1`).textContent = fmt(results[s].y1);
+    document.getElementById(`${s}-m1`).textContent = fmt(results[s].m1);
+  });
+
+  // Build ramp table
+  const tbody = document.getElementById('ramp-tbody');
+  tbody.innerHTML = '';
+  let totals = { cons: 0, base: 0, opti: 0 };
+  for (let i = 0; i < 12; i++) {
+    const tr = document.createElement('tr');
+    const isGoLive = (i + 1) === goLive;
+    ['cons', 'base', 'opti'].forEach(s => totals[s] += results[s].monthly[i]);
+    tr.innerHTML = `
+      <td>${isGoLive ? '▶ ' : ''}Month ${i + 1}${isGoLive ? ' (Go-Live)' : ''}</td>
+      <td class="cons-val">${fmt(results.cons.monthly[i])}</td>
+      <td class="base-val">${fmt(results.base.monthly[i])}</td>
+      <td class="opti-val">${fmt(results.opti.monthly[i])}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+  // Total row
+  const totalRow = document.createElement('tr');
+  totalRow.innerHTML = `
+    <td>Year 1 Total</td>
+    <td class="cons-val">${fmt(totals.cons)}</td>
+    <td class="base-val">${fmt(totals.base)}</td>
+    <td class="opti-val">${fmt(totals.opti)}</td>
+  `;
+  tbody.appendChild(totalRow);
+
+  // Warning flags
+  const flags = document.getElementById('warning-flags');
+  flags.innerHTML = '';
+
+  if (eligiblePct > 0.60) {
+    flags.innerHTML += `<div class="warning-flag"><span>⚠</span> Eligible intent coverage above 60% — defensible only if customer has clean intent taxonomy. Consider lowering for deals without transcript/CRM data.</div>`;
+  }
+  if (volume > 500000) {
+    flags.innerHTML += `<div class="warning-flag"><span>⚠</span> High-volume deal (&gt;500K contacts/mo) — ramp assumptions may compress actual Year 1 delivery. Validate go-live timeline with delivery team.</div>`;
+  }
+  if (reachDiscount < 0.08) {
+    flags.innerHTML += `<div class="warning-flag"><span>⚠</span> Low reachability discount — most deployments see 8–15% opt-out / no-engage. Verify this is intentional.</div>`;
+  }
+}
+
+function toggleAssumptions() {
+  showAssumptions = !showAssumptions;
+  document.getElementById('assump-toggle').classList.toggle('on', showAssumptions);
+  document.getElementById('assumptions-box').classList.toggle('visible', showAssumptions);
+}
+
+function copyTable() {
+  const volume = parseFloat(document.getElementById('monthly-volume').value) || 0;
+  if (!volume) return;
+
+  const rows = document.querySelectorAll('#ramp-tbody tr');
+  let text = 'Month\tConservative\tBase\tOptimistic\n';
+  rows.forEach(r => {
+    const cells = r.querySelectorAll('td');
+    text += Array.from(cells).map(c => c.textContent.trim()).join('\t') + '\n';
+  });
+
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = 'COPIED ✓';
+    setTimeout(() => btn.textContent = 'COPY TABLE', 1500);
+  });
+}
+
+// Init
+calculate();
+</script>
+</body>
+</html>
